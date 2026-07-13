@@ -462,7 +462,8 @@ async def new_agent_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return
 
     await update.effective_message.reply_text(
-        "Step 1/5: Select a model. High/mid variants show as separate buttons when available.",
+        "Step 1/5: Select a model (Grok 4.5 buttons are first when available).\n"
+        "Or type a model id, e.g. grok-4.5 or grok-4.5 high",
         reply_markup=render_model_keyboard(first_page),
     )
 

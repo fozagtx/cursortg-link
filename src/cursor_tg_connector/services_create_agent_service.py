@@ -119,6 +119,54 @@ class CreateAgentService:
         await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_REPOSITORY, payload)
         return self.get_repository_page_from_payload(repositories, 0)
 
+    async def choose_custom_model(
+        self,
+        telegram_user_id: int,
+        model_text: str,
+    ) -> RepositoryPage:
+        """Accept a typed model id like 'grok-4.5' during the model step."""
+        model_text = model_text.strip()
+        if not model_text:
+            raise CreateAgentError("Model id cannot be empty.")
+
+        session = await self.state_repo.get_session(telegram_user_id)
+        if session.wizard_state != WizardStep.WAITING_MODEL:
+            raise CreateAgentError("No model input is expected right now.")
+
+        # Allow "label|id" or "id high" style shortcuts
+        label = model_text
+        model_id = model_text
+        params: list[dict[str, str]] = []
+        lowered = model_text.lower()
+        if " high" in lowered or lowered.endswith("-high"):
+            model_id = model_text.replace(" high", "").replace(" High", "")
+            model_id = model_id.removesuffix("-high").removesuffix("-High")
+            params = [{"id": "reasoning", "value": "high"}]
+            label = f"{model_id} · High"
+        elif " medium" in lowered or " mid" in lowered or lowered.endswith("-medium"):
+            model_id = (
+                model_text.replace(" medium", "")
+                .replace(" Medium", "")
+                .replace(" mid", "")
+                .replace(" Mid", "")
+            )
+            model_id = model_id.removesuffix("-medium").removesuffix("-Medium")
+            params = [{"id": "reasoning", "value": "medium"}]
+            label = f"{model_id} · Medium"
+
+        repositories = await self.cursor_client.list_repositories()
+        if not repositories:
+            raise CreateAgentError("Cursor returned no available repositories.")
+
+        payload = {
+            "model": model_id.strip(),
+            "model_label": label.strip(),
+            "model_params": params,
+            "repositories": repositories,
+        }
+        await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_REPOSITORY, payload)
+        return self.get_repository_page_from_payload(repositories, 0)
+
     async def get_repository_page(
         self,
         telegram_user_id: int,

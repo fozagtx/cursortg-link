@@ -29,24 +29,11 @@ def test_expand_v1_model_options_includes_effort_variants() -> None:
                 ],
             }
         ),
-        ModelCatalogItem.model_validate(
-            {
-                "id": "grok-4",
-                "displayName": "Grok 4",
-                "variants": [
-                    {
-                        "params": [{"id": "reasoning", "value": "high"}],
-                        "displayName": "Grok 4 High",
-                        "isDefault": True,
-                    }
-                ],
-            }
-        ),
     ]
 
     options = _expand_v1_model_options(items)
     labels = [option.label for option in options]
-    assert any("Grok" in label for label in labels)
+    assert any("Grok 4.5" == label for label in labels)
     assert any("High" in label for label in labels)
     assert any("Medium" in label or "medium" in label for label in labels)
     assert all(isinstance(option, ModelOption) for option in options)

@@ -16,6 +16,7 @@ from cursor_tg_connector.telegram_bot_common import (
     get_message_thread_id,
     get_services,
     render_playbook_keyboard,
+    render_repository_keyboard,
 )
 from cursor_tg_connector.telegram_threads import ensure_agent_thread
 from cursor_tg_connector.utils_formatting import (
@@ -72,7 +73,23 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     text = msg.text or msg.caption or ""
 
     if session.wizard_state == WizardStep.WAITING_MODEL:
-        await msg.reply_text("Use the inline buttons to select a model.")
+        try:
+            page_data = await services.create_agent_service.choose_custom_model(
+                services.settings.telegram_allowed_user_id,
+                text,
+            )
+            session = await services.create_agent_service.get_session(
+                services.settings.telegram_allowed_user_id
+            )
+        except CreateAgentError as exc:
+            await msg.reply_text(str(exc))
+            return
+        repositories = session.wizard_payload["repositories"]
+        model_label = session.wizard_payload.get("model_label") or text
+        await msg.reply_text(
+            f"Model: {model_label}\n\nStep 2/5: Select a repository URL.",
+            reply_markup=render_repository_keyboard(page_data, repositories),
+        )
         return
 
     if session.wizard_state == WizardStep.WAITING_REPOSITORY:

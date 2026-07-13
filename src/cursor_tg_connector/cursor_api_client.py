@@ -189,10 +189,11 @@ class CursorApiClient:
 
         payload = await self._request("GET", "/v0/models")
         response = ListModelsResponse.model_validate(payload)
-        return [
+        options = [
             ModelOption(label=model_id, model_id=model_id, params=[])
             for model_id in response.models
         ]
+        return _inject_grok_shortcuts(options)
 
     async def list_repositories(self) -> list[str]:
         payload = await self._request("GET", "/v0/repositories")
@@ -374,6 +375,8 @@ def _expand_v1_model_options(items: list[ModelCatalogItem]) -> list[ModelOption]
 
         options.append(ModelOption(label=base_name, model_id=item.id, params=[]))
 
+    options = _inject_grok_shortcuts(options)
+
     # Prefer models that look like Grok / Claude / GPT near the front for Telegram paging
     def sort_key(option: ModelOption) -> tuple[int, str]:
         label = option.label.lower()
@@ -389,6 +392,40 @@ def _expand_v1_model_options(items: list[ModelCatalogItem]) -> list[ModelOption]
 
     options.sort(key=sort_key)
     return options
+
+
+def _inject_grok_shortcuts(options: list[ModelOption]) -> list[ModelOption]:
+    """Cloud Agents curated lists often omit Grok even when IDE has it.
+
+    Offer common Grok 4.5 ids so Telegram users can try them; create will fail
+    clearly if Cursor rejects the id for Cloud Agents.
+    """
+    existing_ids = {option.model_id.lower() for option in options}
+    existing_labels = {option.label.lower() for option in options}
+    shortcuts = [
+        ModelOption(label="Grok 4.5", model_id="grok-4.5", params=[]),
+        ModelOption(label="Grok 4.5 Fast", model_id="grok-4.5-fast", params=[]),
+        ModelOption(
+            label="Grok 4.5 · High",
+            model_id="grok-4.5",
+            params=[{"id": "reasoning", "value": "high"}],
+        ),
+        ModelOption(
+            label="Grok 4.5 · Medium",
+            model_id="grok-4.5",
+            params=[{"id": "reasoning", "value": "medium"}],
+        ),
+    ]
+    injected: list[ModelOption] = []
+    for shortcut in shortcuts:
+        key = shortcut.label.lower()
+        if key in existing_labels:
+            continue
+        # Still inject even if bare model_id exists, because params differ.
+        if shortcut.params or shortcut.model_id.lower() not in existing_ids:
+            injected.append(shortcut)
+            existing_labels.add(key)
+    return injected + options
 
 
 def _agent_from_v1_create(
