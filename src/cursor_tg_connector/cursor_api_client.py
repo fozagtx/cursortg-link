@@ -13,7 +13,10 @@ from cursor_tg_connector.cursor_api_models import (
     ErrorEnvelope,
     ListAgentsResponse,
     ListModelsResponse,
+    ListModelsV1Response,
     ListRepositoriesResponse,
+    ModelCatalogItem,
+    ModelOption,
     PromptImage,
 )
 
@@ -106,10 +109,33 @@ class CursorApiClient:
         base_branch: str,
         prompt_text: str,
         images: list[PromptImage] | None = None,
+        model_params: list[dict[str, str]] | None = None,
     ) -> Agent:
         prompt: dict[str, Any] = {"text": prompt_text}
         if images:
             prompt["images"] = [img.model_dump(exclude_none=True) for img in images]
+
+        # Prefer v1 when params are present (thinking high/mid, fast, etc.).
+        if model_params is not None:
+            return await self._create_agent_v1(
+                model_id=model,
+                model_params=model_params,
+                repository_url=repository_url,
+                base_branch=base_branch,
+                prompt=prompt,
+            )
+
+        try:
+            return await self._create_agent_v1(
+                model_id=model,
+                model_params=[],
+                repository_url=repository_url,
+                base_branch=base_branch,
+                prompt=prompt,
+            )
+        except CursorApiError:
+            logger.info("Falling back to v0 create agent for model=%s", model)
+
         payload = await self._request(
             "POST",
             "/v0/agents",
@@ -118,14 +144,55 @@ class CursorApiClient:
                 "prompt": prompt,
                 "source": {"repository": repository_url, "ref": base_branch},
             },
-            expected_status=201,
+            expected_statuses=(200, 201),
         )
         return Agent.model_validate(payload)
 
+    async def _create_agent_v1(
+        self,
+        *,
+        model_id: str,
+        model_params: list[dict[str, str]],
+        repository_url: str,
+        base_branch: str,
+        prompt: dict[str, Any],
+    ) -> Agent:
+        model_body: dict[str, Any] = {"id": model_id}
+        if model_params:
+            model_body["params"] = model_params
+        payload = await self._request(
+            "POST",
+            "/v1/agents",
+            json={
+                "prompt": prompt,
+                "model": model_body,
+                "repos": [{"url": repository_url, "startingRef": base_branch}],
+                "autoCreatePR": True,
+            },
+            expected_statuses=(200, 201),
+        )
+        return _agent_from_v1_create(payload, repository_url, base_branch)
+
     async def list_models(self) -> list[str]:
+        options = await self.list_model_options()
+        return [option.label for option in options]
+
+    async def list_model_options(self) -> list[ModelOption]:
+        try:
+            payload = await self._request("GET", "/v1/models")
+            response = ListModelsV1Response.model_validate(payload)
+            options = _expand_v1_model_options(response.items)
+            if options:
+                return options
+        except CursorApiError:
+            logger.info("Falling back to v0 model list")
+
         payload = await self._request("GET", "/v0/models")
         response = ListModelsResponse.model_validate(payload)
-        return response.models
+        return [
+            ModelOption(label=model_id, model_id=model_id, params=[])
+            for model_id in response.models
+        ]
 
     async def list_repositories(self) -> list[str]:
         payload = await self._request("GET", "/v0/repositories")
@@ -139,8 +206,15 @@ class CursorApiClient:
         *,
         params: dict[str, Any] | None = None,
         json: dict[str, Any] | None = None,
-        expected_status: int = 200,
+        expected_status: int | None = None,
+        expected_statuses: tuple[int, ...] | None = None,
     ) -> dict[str, Any]:
+        if expected_statuses is not None:
+            allowed = expected_statuses
+        elif expected_status is not None:
+            allowed = (expected_status,)
+        else:
+            allowed = (200,)
         for attempt in range(self._max_retries + 1):
             try:
                 response = await self._client.request(
@@ -158,7 +232,7 @@ class CursorApiClient:
                 await self._sleep_before_retry(attempt)
                 continue
 
-            if response.status_code == expected_status:
+            if response.status_code in allowed:
                 return response.json()
 
             if attempt < self._max_retries and self._should_retry_status(response.status_code):
@@ -235,3 +309,108 @@ class CursorApiClient:
         if status_code >= 500:
             return "Cursor API internal server error"
         return "Unexpected Cursor API error"
+
+
+def _expand_v1_model_options(items: list[ModelCatalogItem]) -> list[ModelOption]:
+    options: list[ModelOption] = []
+    for item in items:
+        base_name = item.display_name or item.id
+        if item.variants:
+            for variant in item.variants:
+                params = [
+                    {"id": str(entry.get("id", "")), "value": str(entry.get("value", ""))}
+                    for entry in variant.params
+                    if entry.get("id") is not None and entry.get("value") is not None
+                ]
+                label = variant.display_name or base_name
+                if params:
+                    effort = next(
+                        (
+                            param["value"]
+                            for param in params
+                            if param["id"] in {"reasoning", "effort", "thinking", "thinkingLevel"}
+                        ),
+                        None,
+                    )
+                    if effort and effort.lower() not in label.lower():
+                        label = f"{label} ({effort})"
+                options.append(ModelOption(label=label, model_id=item.id, params=params))
+            continue
+
+        if item.parameters:
+            effort_param = next(
+                (
+                    param
+                    for param in item.parameters
+                    if param.id in {"reasoning", "effort", "thinking", "thinkingLevel"}
+                ),
+                None,
+            )
+            if effort_param and effort_param.values:
+                for value in effort_param.values:
+                    label = value.display_name or value.value
+                    options.append(
+                        ModelOption(
+                            label=f"{base_name} · {label}",
+                            model_id=item.id,
+                            params=[{"id": effort_param.id, "value": value.value}],
+                        )
+                    )
+                continue
+
+            # Expand first multi-value param (e.g. fast true/false)
+            multi = next((param for param in item.parameters if len(param.values) > 1), None)
+            if multi is not None:
+                for value in multi.values:
+                    label = value.display_name or value.value
+                    options.append(
+                        ModelOption(
+                            label=f"{base_name} · {label}",
+                            model_id=item.id,
+                            params=[{"id": multi.id, "value": value.value}],
+                        )
+                    )
+                continue
+
+        options.append(ModelOption(label=base_name, model_id=item.id, params=[]))
+
+    # Prefer models that look like Grok / Claude / GPT near the front for Telegram paging
+    def sort_key(option: ModelOption) -> tuple[int, str]:
+        label = option.label.lower()
+        if "grok" in label:
+            return (0, label)
+        if "claude" in label or "opus" in label or "sonnet" in label:
+            return (1, label)
+        if "gpt" in label or "codex" in label:
+            return (2, label)
+        if "composer" in label:
+            return (3, label)
+        return (4, label)
+
+    options.sort(key=sort_key)
+    return options
+
+
+def _agent_from_v1_create(
+    payload: dict[str, Any],
+    repository_url: str,
+    base_branch: str,
+) -> Agent:
+    agent_payload = payload.get("agent") if isinstance(payload.get("agent"), dict) else payload
+    agent_id = str(agent_payload.get("id") or "")
+    name = str(agent_payload.get("name") or agent_id)
+    status = str(agent_payload.get("status") or "CREATING")
+    if status.upper() == "ACTIVE":
+        status = "RUNNING"
+    url = str(agent_payload.get("url") or f"https://cursor.com/agents?id={agent_id}")
+    created_at = str(agent_payload.get("createdAt") or agent_payload.get("created_at") or "")
+    return Agent.model_validate(
+        {
+            "id": agent_id,
+            "name": name,
+            "status": status,
+            "source": {"repository": repository_url, "ref": base_branch},
+            "target": {"url": url, "branchName": None, "prUrl": None},
+            "createdAt": created_at or "1970-01-01T00:00:00Z",
+        }
+    )

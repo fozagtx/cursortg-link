@@ -123,9 +123,15 @@ async def ensure_authorized(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 
 def render_model_keyboard(page_data: RepositoryPage) -> InlineKeyboardMarkup:
+    start_index = page_data.page * 8
     rows = [
-        [InlineKeyboardButton(model, callback_data=f"{MODEL_SELECT_PREFIX}{model}")]
-        for model in page_data.repositories
+        [
+            InlineKeyboardButton(
+                _truncate_button_label(model),
+                callback_data=f"{MODEL_SELECT_PREFIX}{start_index + index}",
+            )
+        ]
+        for index, model in enumerate(page_data.repositories)
     ]
     rows.extend(_pagination_rows(page_data.page, page_data.total_pages, MODEL_PAGE_PREFIX))
     return InlineKeyboardMarkup(rows)
@@ -295,3 +301,9 @@ def _pagination_rows(page: int, total_pages: int, prefix: str) -> list[list[Inli
 
 def _selected_option_label(label: str, selected: bool) -> str:
     return f"✓ {label}" if selected else label
+
+
+def _truncate_button_label(label: str, limit: int = 64) -> str:
+    if len(label) <= limit:
+        return label
+    return label[: limit - 1] + "…"

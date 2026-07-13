@@ -462,7 +462,7 @@ async def new_agent_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return
 
     await update.effective_message.reply_text(
-        "Step 1/5: Select a model ID.",
+        "Step 1/5: Select a model. High/mid variants show as separate buttons when available.",
         reply_markup=render_model_keyboard(first_page),
     )
 

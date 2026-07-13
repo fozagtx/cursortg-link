@@ -54,6 +54,7 @@ class FakeCursorClient:
         base_branch: str,
         prompt_text: str,
         images=None,
+        model_params=None,
     ) -> Agent:
         self.created_agent_calls.append((model, repository_url, base_branch, prompt_text))
         return Agent.model_validate(

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
 from cursor_tg_connector.cursor_api_client import CursorApiClient
-from cursor_tg_connector.cursor_api_models import Agent, PromptImage
+from cursor_tg_connector.cursor_api_models import Agent, ModelOption, PromptImage
 from cursor_tg_connector.domain_types import SessionState, WizardStep
 from cursor_tg_connector.persistence_state_repo import StateRepository
 from cursor_tg_connector.services_playbook_service import PlaybookService
@@ -46,17 +46,21 @@ class CreateAgentService:
         if self._is_rate_limited(session):
             raise CreateAgentError("You can only start /newagent once per minute.")
 
-        models = await self.cursor_client.list_models()
-        if not models:
+        options = await self._load_model_options()
+        if not options:
             raise CreateAgentError("Cursor returned no available models.")
 
+        labels = [option.label for option in options]
         await self.state_repo.set_last_create_agent_at(telegram_user_id, datetime.now(tz=UTC))
         await self.state_repo.set_wizard(
             telegram_user_id,
             WizardStep.WAITING_MODEL,
-            {"models": models},
+            {
+                "models": labels,
+                "model_options": [option.model_dump() for option in options],
+            },
         )
-        return models
+        return labels
 
     async def get_model_page(
         self,
@@ -70,18 +74,48 @@ class CreateAgentService:
         return RepositoryPage(repositories=items, page=current_page, total_pages=total_pages)
 
     async def choose_model(self, telegram_user_id: int, model_id: str) -> RepositoryPage:
+        """Backward-compatible: accept label or model id string."""
         session = await self.state_repo.get_session(telegram_user_id)
-        models = self._wizard_list(session, "models")
-        if session.wizard_state != WizardStep.WAITING_MODEL or model_id not in models:
+        options = self._model_options(session)
+        labels = [option.label for option in options]
+        if session.wizard_state != WizardStep.WAITING_MODEL:
             raise CreateAgentError(
                 "That model selection is no longer valid. Run /newagent again."
             )
 
+        index = next((i for i, option in enumerate(options) if option.label == model_id), None)
+        if index is None:
+            index = next(
+                (i for i, option in enumerate(options) if option.model_id == model_id),
+                None,
+            )
+        if index is None and model_id in labels:
+            index = labels.index(model_id)
+        if index is None:
+            raise CreateAgentError(
+                "That model selection is no longer valid. Run /newagent again."
+            )
+        return await self.choose_model_index(telegram_user_id, index)
+
+    async def choose_model_index(self, telegram_user_id: int, model_index: int) -> RepositoryPage:
+        session = await self.state_repo.get_session(telegram_user_id)
+        options = self._model_options(session)
+        if session.wizard_state != WizardStep.WAITING_MODEL or model_index >= len(options):
+            raise CreateAgentError(
+                "That model selection is no longer valid. Run /newagent again."
+            )
+
+        selected = options[model_index]
         repositories = await self.cursor_client.list_repositories()
         if not repositories:
             raise CreateAgentError("Cursor returned no available repositories.")
 
-        payload = {"model": model_id, "repositories": repositories}
+        payload = {
+            "model": selected.model_id,
+            "model_label": selected.label,
+            "model_params": selected.params,
+            "repositories": repositories,
+        }
         await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_REPOSITORY, payload)
         return self.get_repository_page_from_payload(repositories, 0)
 
@@ -122,6 +156,8 @@ class CreateAgentService:
 
         payload = {
             "model": session.wizard_payload["model"],
+            "model_label": session.wizard_payload.get("model_label"),
+            "model_params": session.wizard_payload.get("model_params") or [],
             "repository": repository,
             "branches": branches,
         }
@@ -214,12 +250,16 @@ class CreateAgentService:
             prompt_text,
         )
         previous_active_agent_id = session.active_agent_id
+        model_params = payload.get("model_params")
+        if not isinstance(model_params, list):
+            model_params = []
         agent = await self.cursor_client.create_agent(
             model=payload["model"],
             repository_url=payload["repository"],
             base_branch=payload["branch"],
             prompt_text=composed_prompt,
             images=images,
+            model_params=model_params,
         )
         await self.state_repo.set_delivery_cursor(agent.id, 0)
         if previous_active_agent_id and previous_active_agent_id != agent.id:
@@ -243,6 +283,24 @@ class CreateAgentService:
             return False
         last_start = datetime.fromisoformat(session.last_create_agent_at)
         return datetime.now(tz=UTC) - last_start < timedelta(minutes=1)
+
+    async def _load_model_options(self) -> list[ModelOption]:
+        if hasattr(self.cursor_client, "list_model_options"):
+            return await self.cursor_client.list_model_options()
+        models = await self.cursor_client.list_models()
+        return [ModelOption(label=model, model_id=model, params=[]) for model in models]
+
+    def _model_options(self, session: SessionState) -> list[ModelOption]:
+        raw = session.wizard_payload.get("model_options")
+        if isinstance(raw, list) and raw:
+            options: list[ModelOption] = []
+            for item in raw:
+                if isinstance(item, dict):
+                    options.append(ModelOption.model_validate(item))
+            if options:
+                return options
+        labels = self._wizard_list(session, "models")
+        return [ModelOption(label=label, model_id=label, params=[]) for label in labels]
 
     async def _fetch_branches_for_repository(self, repository_url: str) -> list[str]:
         try:

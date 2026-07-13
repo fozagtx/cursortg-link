@@ -96,7 +96,7 @@ async def callback_router(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await _show_model_page(update, context, int(data[len(MODEL_PAGE_PREFIX) :]))
         return
     if data.startswith(MODEL_SELECT_PREFIX):
-        await _select_model(update, context, data[len(MODEL_SELECT_PREFIX) :])
+        await _select_model(update, context, int(data[len(MODEL_SELECT_PREFIX) :]))
         return
     if data.startswith(REPO_PAGE_PREFIX):
         await _show_repository_page(update, context, int(data[len(REPO_PAGE_PREFIX) :]))
@@ -205,13 +205,17 @@ async def _show_model_page(update: Update, context: ContextTypes.DEFAULT_TYPE, p
     await query.edit_message_reply_markup(reply_markup=render_model_keyboard(page_data))
 
 
-async def _select_model(update: Update, context: ContextTypes.DEFAULT_TYPE, model_id: str) -> None:
+async def _select_model(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    model_index: int,
+) -> None:
     query = update.callback_query
     services = get_services(context)
     try:
-        page_data = await services.create_agent_service.choose_model(
+        page_data = await services.create_agent_service.choose_model_index(
             services.settings.telegram_allowed_user_id,
-            model_id,
+            model_index,
         )
         session = await services.create_agent_service.get_session(
             services.settings.telegram_allowed_user_id
@@ -221,9 +225,10 @@ async def _select_model(update: Update, context: ContextTypes.DEFAULT_TYPE, mode
         return
 
     repositories = session.wizard_payload["repositories"]
-    await query.answer("Model selected")
+    model_label = session.wizard_payload.get("model_label") or session.wizard_payload.get("model")
+    await query.answer(f"Model: {model_label}")
     await query.edit_message_text(
-        "Step 2/5: Select a repository URL.",
+        f"Model: {model_label}\n\nStep 2/5: Select a repository URL.",
         reply_markup=render_repository_keyboard(page_data, repositories),
     )
 

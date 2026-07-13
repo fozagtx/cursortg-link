@@ -74,6 +74,12 @@ async def test_create_agent_surfaces_cursor_error_message() -> None:
         )
 
         with respx.mock(assert_all_called=True) as router:
+            router.post("https://api.cursor.com/v1/agents").mock(
+                return_value=httpx.Response(
+                    400,
+                    json={"error": {"message": "v1 unavailable"}},
+                )
+            )
             router.post("https://api.cursor.com/v0/agents").mock(
                 return_value=httpx.Response(
                     429,

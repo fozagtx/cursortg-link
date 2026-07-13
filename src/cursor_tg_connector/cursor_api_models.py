@@ -61,6 +61,44 @@ class ListModelsResponse(BaseModel):
     models: list[str]
 
 
+class ModelParamValue(BaseModel):
+    value: str
+    display_name: str | None = Field(default=None, alias="displayName")
+
+
+class ModelParameter(BaseModel):
+    id: str
+    display_name: str | None = Field(default=None, alias="displayName")
+    values: list[ModelParamValue] = Field(default_factory=list)
+
+
+class ModelVariant(BaseModel):
+    params: list[dict[str, str]] = Field(default_factory=list)
+    display_name: str | None = Field(default=None, alias="displayName")
+    description: str | None = None
+    is_default: bool | None = Field(default=None, alias="isDefault")
+
+
+class ModelCatalogItem(BaseModel):
+    id: str
+    display_name: str | None = Field(default=None, alias="displayName")
+    aliases: list[str] = Field(default_factory=list)
+    parameters: list[ModelParameter] = Field(default_factory=list)
+    variants: list[ModelVariant] = Field(default_factory=list)
+
+
+class ListModelsV1Response(BaseModel):
+    items: list[ModelCatalogItem] = Field(default_factory=list)
+
+
+class ModelOption(BaseModel):
+    """One Telegram-selectable model configuration."""
+
+    label: str
+    model_id: str
+    params: list[dict[str, str]] = Field(default_factory=list)
+
+
 class ApiKeyInfo(BaseModel):
     api_key_name: str = Field(alias="apiKeyName")
     created_at: str = Field(alias="createdAt")
