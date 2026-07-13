@@ -13,8 +13,6 @@ COPY skills-catalog ./skills-catalog
 
 RUN pip install --no-cache-dir .
 
-VOLUME ["/data"]
-
 RUN mkdir -p /data
 
 CMD ["python", "-m", "cursor_tg_connector"]
