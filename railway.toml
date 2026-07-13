@@ -1,0 +1,15 @@
+# Railway deployment for the Telegram ↔ Cursor Cloud Agents bridge.
+# Deploy from GitHub: https://github.com/fozagtx/cursortg-link
+# Or: railway up
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+# Healthcheck hits the lightweight /health server started on $PORT
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+startCommand = "python -m cursor_tg_connector"

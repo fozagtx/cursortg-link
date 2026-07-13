@@ -352,6 +352,35 @@ docker run -d \
 - Keep to a **single replica** — SQLite is local and not shared.
 - Store credentials as environment variables or container secrets.
 
+### Railway deployment (recommended for hackathons)
+
+Keep the bot online 24/7 so you can `/newagent` from Telegram during the event.
+
+1. **Create a dedicated Telegram bot (optional but clean)** via [@BotFather](https://t.me/BotFather) → `/newbot` → save `TELEGRAM_BOT_TOKEN`.
+2. Get your user id from [@userinfobot](https://t.me/userinfobot) → `TELEGRAM_ALLOWED_USER_ID`.
+3. Cursor API key from [Cursor Dashboard → Cloud Agents API keys](https://cursor.com/dashboard?tab=cloud-agents).
+4. Optional: GitHub PAT for `/pr` `/diff` `/ready` `/merge`.
+
+```bash
+cd cursortg-link
+railway init -n cursortg-link
+railway volume add -m /data
+railway variables set \
+  TELEGRAM_BOT_TOKEN=... \
+  TELEGRAM_ALLOWED_USER_ID=... \
+  CURSOR_API_KEY=... \
+  SQLITE_PATH=/data/connector.db \
+  GITHUB_TOKEN=...   # optional
+railway up
+```
+
+Or connect the GitHub repo in the Railway dashboard (Dockerfile builder). The app serves `/health` on `$PORT` for Railway healthchecks and stores SQLite under `/data` (attach a volume).
+
+**Hackathon use after deploy:**
+1. Sync skills into the target repo: `./scripts/sync-skills-to-repo.sh ~/path/to/hackathon --playbook ui`
+2. Commit `.cursor/` in that repo
+3. Message your bot: `/newagent` → pick playbook → short outcome prompt
+
 ### Docker image releases
 
 GitHub Actions publishes Docker images to Docker Hub in two cases:

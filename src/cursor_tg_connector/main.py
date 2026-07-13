@@ -5,6 +5,7 @@ import asyncio
 import logging
 import os
 import signal
+from pathlib import Path
 
 from cursor_tg_connector.config import Settings
 from cursor_tg_connector.cursor_api_client import CursorApiClient
@@ -30,10 +31,41 @@ def _resolve_env_file() -> str | None:
     return args.env_file or os.environ.get("ENV_FILE")
 
 
+async def _health_handle(
+    reader: asyncio.StreamReader,
+    writer: asyncio.StreamWriter,
+) -> None:
+    try:
+        await reader.read(1024)
+        body = b"ok"
+        writer.write(
+            b"HTTP/1.1 200 OK\r\n"
+            b"Content-Type: text/plain\r\n"
+            b"Content-Length: " + str(len(body)).encode() + b"\r\n"
+            b"Connection: close\r\n\r\n" + body
+        )
+        await writer.drain()
+    finally:
+        writer.close()
+        await writer.wait_closed()
+
+
+async def _start_health_server() -> asyncio.Server | None:
+    """Railway probes $PORT. Serve a tiny /health without extra dependencies."""
+    port_raw = os.environ.get("PORT")
+    if not port_raw:
+        return None
+    server = await asyncio.start_server(_health_handle, "0.0.0.0", int(port_raw))
+    logger.info("Health server listening on 0.0.0.0:%s", port_raw)
+    return server
+
+
 async def run() -> None:
     env_file = _resolve_env_file()
     settings = Settings(_env_file=env_file) if env_file else Settings()
     configure_logging(settings.log_level)
+
+    Path(settings.sqlite_path).parent.mkdir(parents=True, exist_ok=True)
 
     database = Database(settings.sqlite_path)
     await database.initialize()
@@ -90,7 +122,9 @@ async def run() -> None:
     updater_started = False
     application_started = False
     application_initialized = False
+    health_server: asyncio.Server | None = None
     try:
+        health_server = await _start_health_server()
         await application.initialize()
         application_initialized = True
         await register_commands(application)
@@ -111,6 +145,9 @@ async def run() -> None:
             await application.stop()
         if application_initialized:
             await application.shutdown()
+        if health_server is not None:
+            health_server.close()
+            await health_server.wait_closed()
         await cursor_client.aclose()
         if github_client is not None:
             await github_client.aclose()
