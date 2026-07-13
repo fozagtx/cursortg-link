@@ -73,10 +73,10 @@ class PlaybookService:
             [
                 "",
                 "During /newagent, pick a playbook after the branch step.",
-                "Or run /useplaybook <id> while waiting for the prompt.",
+                "Or run /useplaybook PLAYBOOK_ID while waiting for the prompt.",
                 "",
                 "Before launch, sync skills into the TARGET repo:",
-                "./scripts/sync-skills-to-repo.sh /path/to/repo --playbook <id>",
+                "./scripts/sync-skills-to-repo.sh /path/to/repo --playbook PLAYBOOK_ID",
                 "Then commit .cursor/ so Cloud Agents can see the skills.",
             ]
         )

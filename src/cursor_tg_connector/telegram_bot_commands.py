@@ -53,7 +53,7 @@ _HELP_TEXT = (
     "\n"
     "Usage:\n"
     "• Send /agents to view agents. In thread mode it becomes the thread opener.\n"
-    "• Send /history <count> to replay the last N conversation messages.\n"
+    "• Send /history N to replay the last N conversation messages.\n"
     "• Send /focus to choose the active agent from clickable options in non-thread mode.\n"
     "• Send /configure_unread full|count|none to control non-active agent notices.\n"
     "• Send /unfocus to clear the current active agent selection.\n"
@@ -62,7 +62,7 @@ _HELP_TEXT = (
     "• Send /threadmode on to route each agent into its own Telegram thread.\n"
     "• Send /newagent to create a new agent (model → repo → branch → playbook → prompt).\n"
     "• Send /playbooks to list Cloud Agent playbooks (ui, seo, ship, hackathon, fullstack).\n"
-    "• Send /useplaybook <id> during the prompt step to switch playbooks.\n"
+    "• Send /useplaybook PLAYBOOK_ID during the prompt step to switch playbooks.\n"
     "• Send /pr to inspect the current agent pull request and use action buttons.\n"
     "• Send /diff to show the current agent pull request diff in a code block.\n"
     "• Send /ready to mark the current agent pull request ready for review.\n"
@@ -89,7 +89,7 @@ _PR_ACTIONS_DISABLED_TEXT = (
 )
 
 _MERGE_USAGE_TEXT = "Usage: /merge [merge|squash|rebase]"
-_HISTORY_USAGE_TEXT = "Usage: /history <count> (count must be a positive integer)"
+_HISTORY_USAGE_TEXT = "Usage: /history N (N must be a positive integer)"
 _START_GREETING = "Hi! I'm your Cursor Telegram connector."
 _THREAD_MODE_DISABLED_EXPLANATION = (
     "Telegram Threaded Mode is not enabled for this bot.\n\n"
@@ -598,12 +598,12 @@ async def useplaybook_command(update: Update, context: ContextTypes.DEFAULT_TYPE
         }:
             playbooks = services.create_agent_service.playbook_service.list_playbooks()
             await update.effective_message.reply_text(
-                "Usage: /useplaybook <id>\n\n" + catalog,
+                "Usage: /useplaybook PLAYBOOK_ID\n\n" + catalog,
                 reply_markup=render_playbook_keyboard(playbooks),
             )
         else:
             await update.effective_message.reply_text(
-                "Usage: /useplaybook <id>\n\n" + catalog
+                "Usage: /useplaybook PLAYBOOK_ID\n\n" + catalog
             )
         return
 

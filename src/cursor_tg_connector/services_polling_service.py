@@ -6,6 +6,7 @@ import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from cursor_tg_connector.config import Settings
+from cursor_tg_connector.cursor_api_client import CursorApiError
 from cursor_tg_connector.domain_types import UnselectedAgentUnreadMode, WizardStep
 from cursor_tg_connector.persistence_state_repo import StateRepository
 from cursor_tg_connector.services_agent_service import (
@@ -35,6 +36,7 @@ class PollingService:
             active_followups if active_followups is not None else set()
         )
         self._lock = asyncio.Lock()
+        self._privacy_mode_warned = False
 
     async def poll_once(self, notifier) -> None:
         if self._lock.locked():
@@ -54,7 +56,36 @@ class PollingService:
                 )
                 return
 
-            snapshots = await self.agent_service.list_running_snapshots()
+            try:
+                snapshots = await self.agent_service.list_running_snapshots()
+            except CursorApiError as exc:
+                message = str(exc)
+                if "Privacy Mode (Legacy)" in message:
+                    if not self._privacy_mode_warned:
+                        self._privacy_mode_warned = True
+                        logger.error(
+                            "Cloud Agents blocked by Privacy Mode (Legacy). "
+                            "Switch to Privacy Mode in Cursor Settings or "
+                            "https://cursor.com/dashboard?tab=settings — then restart."
+                        )
+                        try:
+                            await notifier.send_text(
+                                chat_id,
+                                "Cloud Agents are blocked by Privacy Mode (Legacy).\n\n"
+                                "Fix: Cursor Settings → Privacy → switch from "
+                                '"Privacy Mode (Legacy)" to "Privacy Mode".\n'
+                                "Or: https://cursor.com/dashboard?tab=settings\n\n"
+                                "New Privacy Mode still has zero retention with providers; "
+                                "it only allows temporary storage needed for Cloud Agents.",
+                            )
+                        except Exception:
+                            logger.exception("Failed to notify about Privacy Mode (Legacy)")
+                    else:
+                        logger.warning("Skipping poll: Privacy Mode (Legacy) still enabled")
+                    return
+                logger.exception("Cursor API error during poll")
+                return
+
             active_agent_id = session.active_agent_id
             seen_agent_ids = {snapshot.agent.id for snapshot in snapshots}
 

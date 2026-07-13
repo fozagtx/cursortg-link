@@ -689,7 +689,7 @@ async def test_history_command_requires_positive_integer_count(settings, state_r
     )
 
     assert [text for text, _ in message.replies] == [
-        "Usage: /history <count> (count must be a positive integer)"
+        "Usage: /history N (N must be a positive integer)"
     ]
 
 
