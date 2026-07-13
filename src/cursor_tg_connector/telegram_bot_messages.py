@@ -15,6 +15,7 @@ from cursor_tg_connector.telegram_bot_common import (
     auto_enable_thread_mode_if_supported,
     get_message_thread_id,
     get_services,
+    render_playbook_keyboard,
 )
 from cursor_tg_connector.telegram_threads import ensure_agent_thread
 from cursor_tg_connector.utils_formatting import (
@@ -88,7 +89,10 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             await msg.reply_text(str(exc))
             return
         await msg.reply_text(
-            "Step 4/4: Send the prompt (text, or photo with caption) for the new agent."
+            "Step 4/5: Select a Cloud Agent playbook (or `none`).",
+            reply_markup=render_playbook_keyboard(
+                services.create_agent_service.playbook_service.list_playbooks()
+            ),
         )
         return
 

@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes
 
 from cursor_tg_connector.cursor_api_client import CursorApiError
 from cursor_tg_connector.cursor_api_models import Agent
-from cursor_tg_connector.domain_types import UnselectedAgentUnreadMode
+from cursor_tg_connector.domain_types import UnselectedAgentUnreadMode, WizardStep
 from cursor_tg_connector.github_api_client import GitHubApiError
 from cursor_tg_connector.github_api_models import GitHubMergeMethod
 from cursor_tg_connector.services_agent_service import AgentStopError
@@ -23,6 +23,7 @@ from cursor_tg_connector.telegram_bot_common import (
     get_services,
     render_agent_keyboard,
     render_model_keyboard,
+    render_playbook_keyboard,
     render_pull_request_keyboard,
     render_reset_db_keyboard,
     render_thread_mode_keyboard,
@@ -59,7 +60,9 @@ _HELP_TEXT = (
     "• Send /stop to stop the currently selected running agent.\n"
     "• Send /close from inside an agent thread to close and unbind that Telegram thread.\n"
     "• Send /threadmode on to route each agent into its own Telegram thread.\n"
-    "• Send /newagent to create a new agent (model → repo → branch → prompt).\n"
+    "• Send /newagent to create a new agent (model → repo → branch → playbook → prompt).\n"
+    "• Send /playbooks to list Cloud Agent playbooks (ui, seo, ship, hackathon, fullstack).\n"
+    "• Send /useplaybook <id> during the prompt step to switch playbooks.\n"
     "• Send /pr to inspect the current agent pull request and use action buttons.\n"
     "• Send /diff to show the current agent pull request diff in a code block.\n"
     "• Send /ready to mark the current agent pull request ready for review.\n"
@@ -459,7 +462,7 @@ async def new_agent_command(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         return
 
     await update.effective_message.reply_text(
-        "Step 1/4: Select a model ID.",
+        "Step 1/5: Select a model ID.",
         reply_markup=render_model_keyboard(first_page),
     )
 
@@ -565,6 +568,57 @@ async def merge_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     await update.effective_message.reply_text(
         f"Merged {agent.target.pr_url} using "
         f"{merge_method or services.settings.github_default_merge_method}.\n{result.message}"
+    )
+
+
+async def playbooks_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await _authorize_and_record_chat(update, context):
+        return
+
+    services = get_services(context)
+    catalog = services.create_agent_service.playbook_service.format_catalog()
+    await update.effective_message.reply_text(catalog)
+
+
+async def useplaybook_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await _authorize_and_record_chat(update, context):
+        return
+
+    services = get_services(context)
+    args = context.args or []
+    playbook_id = args[0].strip().lower() if args else ""
+    if not playbook_id:
+        session = await services.create_agent_service.state_repo.get_session(
+            services.settings.telegram_allowed_user_id
+        )
+        catalog = services.create_agent_service.playbook_service.format_catalog()
+        if session.wizard_state in {
+            WizardStep.WAITING_PLAYBOOK,
+            WizardStep.WAITING_PROMPT,
+        }:
+            playbooks = services.create_agent_service.playbook_service.list_playbooks()
+            await update.effective_message.reply_text(
+                "Usage: /useplaybook <id>\n\n" + catalog,
+                reply_markup=render_playbook_keyboard(playbooks),
+            )
+        else:
+            await update.effective_message.reply_text(
+                "Usage: /useplaybook <id>\n\n" + catalog
+            )
+        return
+
+    try:
+        selected = await services.create_agent_service.choose_playbook(
+            services.settings.telegram_allowed_user_id,
+            playbook_id,
+        )
+    except CreateAgentError as exc:
+        await update.effective_message.reply_text(str(exc))
+        return
+
+    await update.effective_message.reply_text(
+        f"Playbook `{selected}` selected.\n"
+        "Step 5/5: Send the prompt text for the new agent (or a photo with caption)."
     )
 
 

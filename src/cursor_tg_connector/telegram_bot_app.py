@@ -27,6 +27,7 @@ from cursor_tg_connector.telegram_bot_commands import (
     history_command,
     merge_command,
     new_agent_command,
+    playbooks_command,
     pr_command,
     ready_command,
     resetdb_command,
@@ -34,6 +35,7 @@ from cursor_tg_connector.telegram_bot_commands import (
     stop_command,
     threadmode_command,
     unfocus_command,
+    useplaybook_command,
 )
 from cursor_tg_connector.telegram_bot_common import BOT_COMMANDS, AppServices
 from cursor_tg_connector.telegram_bot_messages import message_handler
@@ -66,6 +68,8 @@ def build_application(services: AppServices) -> Application:
     application.add_handler(CommandHandler("close", close_command))
     application.add_handler(CommandHandler("threadmode", threadmode_command))
     application.add_handler(CommandHandler("newagent", new_agent_command))
+    application.add_handler(CommandHandler("playbooks", playbooks_command))
+    application.add_handler(CommandHandler("useplaybook", useplaybook_command))
     application.add_handler(CommandHandler("pr", pr_command))
     application.add_handler(CommandHandler("diff", diff_command))
     application.add_handler(CommandHandler("ready", ready_command))

@@ -1,0 +1,141 @@
+{
+  "ui": {
+    "title": "Premium UI build",
+    "summary": "Polished React/Next UI with design-promax + craft rules",
+    "skills": [
+      "design-promax",
+      "frontend-design",
+      "frontend-design-guidelines",
+      "design-taste",
+      "design-taste-frontend",
+      "gpt-taste",
+      "high-end-visual-design",
+      "page-load-animations",
+      "web-animation-guidelines",
+      "number-formatting",
+      "transitions-dev",
+      "landing-page-rewrite",
+      "brand-design",
+      "redesign-existing-projects",
+      "minimalist-ui",
+      "stitch-design-taste"
+    ]
+  },
+  "seo": {
+    "title": "GEO + SEO pass",
+    "summary": "AI-search citability + technical SEO foundations",
+    "skills": [
+      "geo",
+      "geo-audit",
+      "geo-citability",
+      "geo-technical",
+      "geo-schema",
+      "geo-llmstxt",
+      "geo-content",
+      "geo-crawlers",
+      "geo-brand-mentions",
+      "geo-platform-optimizer",
+      "geo-report",
+      "landing-page-rewrite"
+    ]
+  },
+  "ship": {
+    "title": "Ship-ready slice",
+    "summary": "Tracer-bullet vertical slice — build, test, PR, demo",
+    "skills": [
+      "diagnose",
+      "tdd",
+      "review-and-iterate",
+      "vibe-security",
+      "webapp-testing",
+      "handoff",
+      "prototype",
+      "zoom-out"
+    ]
+  },
+  "hackathon": {
+    "title": "Hackathon sprint",
+    "summary": "MVP → polish → submission → social in one pass",
+    "skills": [
+      "submit-to-hackathon",
+      "hackathon-project-social-playbook",
+      "bpfg-hackathon",
+      "create-pitch-deck",
+      "competitive-landscape",
+      "roast-my-product",
+      "product-review",
+      "validate-idea",
+      "scaffold-project",
+      "build-with-claude",
+      "colosseum-copilot",
+      "apply-grant"
+    ]
+  },
+  "fullstack": {
+    "title": "Fullstack feature",
+    "summary": "API + UI + persistence for one feature",
+    "skills": [
+      "design-promax",
+      "frontend-design-guidelines",
+      "design-taste",
+      "page-load-animations",
+      "number-formatting",
+      "diagnose",
+      "tdd",
+      "vibe-security",
+      "webapp-testing",
+      "prototype"
+    ]
+  },
+  "solana": {
+    "title": "Solana build",
+    "summary": "Scaffold, program, debug, review, deploy for Solana hackathons",
+    "skills": [
+      "scaffold-project",
+      "build-defi-protocol",
+      "build-data-pipeline",
+      "debug-program",
+      "review-and-iterate",
+      "deploy-to-mainnet",
+      "solana-beginner",
+      "launch-token",
+      "x-ray",
+      "defillama-research",
+      "find-next-crypto-idea",
+      "virtual-solana-incubator",
+      "spyzer-memecoin-guide",
+      "build-mobile"
+    ]
+  },
+  "pitch": {
+    "title": "Pitch + content",
+    "summary": "Deck, video, ads, brand kit for demo day",
+    "skills": [
+      "create-pitch-deck",
+      "pptx",
+      "marketing-video",
+      "video-craft",
+      "hackathon-project-social-playbook",
+      "ad-variation-generator",
+      "brandkit",
+      "theme-factory"
+    ]
+  },
+  "security": {
+    "title": "Security pass",
+    "summary": "Threat model, audit, and review before demo",
+    "skills": [
+      "vibe-security",
+      "cso",
+      "x-ray",
+      "solidity-auditor",
+      "solodit",
+      "review-and-iterate"
+    ]
+  },
+  "none": {
+    "title": "No playbook",
+    "summary": "Raw prompt only — sync no skills",
+    "skills": []
+  }
+}

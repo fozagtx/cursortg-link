@@ -50,6 +50,8 @@ Issues or suggestions? Reach me on Telegram at [@tb5z035i](https://t.me/tb5z035i
 ## Key functionalities
 
 - Create and manage Cursor Cloud agents **directly from Telegram**.
+- Launch agents with **hackathon playbooks** (`ui`, `seo`, `ship`, `hackathon`, `fullstack`) that prepend sharp instructions.
+- Ship a reusable **`.cursor/skills/` pack** (design-promax, GEO/SEO, submission) you can sync into target repos.
 - Send **follow-up** messages to the active agent and receive replies in chat.
 - Monitor unread updates from multiple agents with configurable notification behavior.
 - Inspect **PR status and diffs** from Telegram.
@@ -186,7 +188,9 @@ The SQLite database defaults to `/data/connector.db`. Mount `/data` to persisten
 | `/clear` | Mark all unread messages as read for the active agent |
 | `/close` | Close the current bound Telegram thread/topic in threaded mode without deleting the Cursor agent |
 | `/threadmode` | Show status or toggle per-agent Telegram thread routing with `/threadmode on|off|status` (requires bot-level Threaded Mode in @BotFather) |
-| `/newagent` | Create a new agent with a 4-step wizard (model → repo → branch → prompt) |
+| `/newagent` | Create a new agent with a 5-step wizard (model → repo → branch → playbook → prompt) |
+| `/playbooks` | List Cloud Agent playbooks (`ui`, `seo`, `ship`, `hackathon`, `fullstack`, `solana`, `pitch`, `security`, `none`) |
+| `/useplaybook <id>` | Select/switch playbook during the `/newagent` prompt step |
 | `/pr` | Show the active agent PR status and action buttons |
 | `/diff` | Show the active agent PR diff in a Telegram code block |
 | `/ready` | Mark the active agent PR ready for review |
@@ -196,6 +200,22 @@ The SQLite database defaults to `/data/connector.db`. Mount `/data` to persisten
 | `/help` | Show available commands |
 
 Any other text message is forwarded as a follow-up to the active agent. When thread mode is enabled, follow-ups must be sent from the bound agent thread.
+
+### Skills pack + playbooks (hackathon Cloud Agents)
+
+**Policy:** sync pack for target repos · playbook-mapped only · commit `.cursor/` in the target.
+
+- `skills-catalog/` — all **137** skills indexed (nothing forgotten); 68 playbooked
+- `skills-pack/` — vendored skill files (~6MB; geo slimmed)
+- `agent-playbooks/` — Telegram prompt preambles
+- `scripts/sync-skills-to-repo.sh` — sync by playbook
+- `scripts/refresh-skills-pack.sh` — re-vendor from your local skill dirs
+
+```bash
+./scripts/sync-skills-to-repo.sh --list
+./scripts/sync-skills-to-repo.sh /path/to/hackathon-repo --playbook ui
+# commit .cursor/ in that repo, then Telegram /newagent with the same playbook
+```
 
 ## Configuration Reference
 

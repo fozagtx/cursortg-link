@@ -17,6 +17,7 @@ from cursor_tg_connector.telegram_bot_common import (
     get_services,
     render_branch_keyboard,
     render_model_keyboard,
+    render_playbook_keyboard,
     render_pull_request_keyboard,
     render_repository_keyboard,
     render_thread_mode_keyboard,
@@ -27,6 +28,7 @@ from cursor_tg_connector.telegram_bot_constants import (
     BRANCH_SELECT_PREFIX,
     MODEL_PAGE_PREFIX,
     MODEL_SELECT_PREFIX,
+    PLAYBOOK_SELECT_PREFIX,
     PR_MERGE_PREFIX,
     PR_READY_PREFIX,
     PR_SHOW_PREFIX,
@@ -107,6 +109,9 @@ async def callback_router(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
     if data.startswith(BRANCH_SELECT_PREFIX):
         await _select_branch(update, context, int(data[len(BRANCH_SELECT_PREFIX) :]))
+        return
+    if data.startswith(PLAYBOOK_SELECT_PREFIX):
+        await _select_playbook(update, context, data[len(PLAYBOOK_SELECT_PREFIX) :])
         return
 
     await query.answer()
@@ -218,7 +223,7 @@ async def _select_model(update: Update, context: ContextTypes.DEFAULT_TYPE, mode
     repositories = session.wizard_payload["repositories"]
     await query.answer("Model selected")
     await query.edit_message_text(
-        "Step 2/4: Select a repository URL.",
+        "Step 2/5: Select a repository URL.",
         reply_markup=render_repository_keyboard(page_data, repositories),
     )
 
@@ -268,7 +273,7 @@ async def _select_repository(
     page_data = services.create_agent_service.get_branch_page_from_payload(branches, 0)
     await query.answer("Repository selected")
     await query.edit_message_text(
-        f"Step 3/4: Select a base branch for {repository}, or type a branch name.",
+        f"Step 3/5: Select a base branch for {repository}, or type a branch name.",
         reply_markup=render_branch_keyboard(page_data, branches),
     )
 
@@ -316,7 +321,34 @@ async def _select_branch(
         return
 
     await query.answer("Branch selected")
-    await query.edit_message_text("Step 4/4: Send the prompt text for the new agent.")
+    playbooks = services.create_agent_service.playbook_service.list_playbooks()
+    await query.edit_message_text(
+        "Step 4/5: Select a Cloud Agent playbook (or `none`).",
+        reply_markup=render_playbook_keyboard(playbooks),
+    )
+
+
+async def _select_playbook(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    playbook_id: str,
+) -> None:
+    query = update.callback_query
+    services = get_services(context)
+    try:
+        selected = await services.create_agent_service.choose_playbook(
+            services.settings.telegram_allowed_user_id,
+            playbook_id,
+        )
+    except CreateAgentError as exc:
+        await query.answer(str(exc), show_alert=True)
+        return
+
+    await query.answer(f"Playbook: {selected}")
+    await query.edit_message_text(
+        f"Step 5/5: Playbook `{selected}` selected.\n"
+        "Send the prompt text for the new agent (or a photo with caption)."
+    )
 
 
 async def _show_pull_request(

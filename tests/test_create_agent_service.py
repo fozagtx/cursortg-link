@@ -94,6 +94,7 @@ async def test_create_agent_wizard_happy_path(state_repo) -> None:
     assert "main" in branches
 
     await service.save_branch(1234, "main")
+    await service.choose_playbook(1234, "none")
     agent = await service.finish_prompt(1234, "Implement it")
 
     session = await service.get_session(1234)
@@ -147,9 +148,14 @@ async def test_choose_branch_via_selector(state_repo) -> None:
     await service.choose_branch(1234, 1)
 
     session = await service.get_session(1234)
-    assert session.wizard_state == WizardStep.WAITING_PROMPT
+    assert session.wizard_state == WizardStep.WAITING_PLAYBOOK
     assert session.wizard_payload["branch"] == "develop"
     assert "branches" not in session.wizard_payload
+
+    await service.choose_playbook(1234, "ship")
+    session = await service.get_session(1234)
+    assert session.wizard_state == WizardStep.WAITING_PROMPT
+    assert session.wizard_payload["playbook"] == "ship"
 
 
 @pytest.mark.asyncio
@@ -191,7 +197,7 @@ async def test_save_branch_cleans_up_branches_key(state_repo) -> None:
     await service.save_branch(1234, "custom-branch")
 
     session = await service.get_session(1234)
-    assert session.wizard_state == WizardStep.WAITING_PROMPT
+    assert session.wizard_state == WizardStep.WAITING_PLAYBOOK
     assert session.wizard_payload["branch"] == "custom-branch"
     assert "branches" not in session.wizard_payload
 
@@ -223,6 +229,7 @@ async def test_finish_prompt_silences_previous_active_agent_unread_state(state_r
     await service.choose_model(1234, "gpt-5.4")
     await service.choose_repository(1234, 0)
     await service.save_branch(1234, "main")
+    await service.choose_playbook(1234, "none")
 
     await service.finish_prompt(1234, "Create the new agent")
 

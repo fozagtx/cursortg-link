@@ -8,6 +8,7 @@ from cursor_tg_connector.cursor_api_client import CursorApiClient
 from cursor_tg_connector.cursor_api_models import Agent, PromptImage
 from cursor_tg_connector.domain_types import SessionState, WizardStep
 from cursor_tg_connector.persistence_state_repo import StateRepository
+from cursor_tg_connector.services_playbook_service import PlaybookService
 from cursor_tg_connector.utils_formatting import paginate
 
 logger = logging.getLogger(__name__)
@@ -25,9 +26,15 @@ class RepositoryPage:
 
 
 class CreateAgentService:
-    def __init__(self, cursor_client: CursorApiClient, state_repo: StateRepository) -> None:
+    def __init__(
+        self,
+        cursor_client: CursorApiClient,
+        state_repo: StateRepository,
+        playbook_service: PlaybookService | None = None,
+    ) -> None:
         self.cursor_client = cursor_client
         self.state_repo = state_repo
+        self.playbook_service = playbook_service or PlaybookService()
 
     async def start_wizard(self, telegram_user_id: int, chat_id: int) -> list[str]:
         session = await self.state_repo.update_chat_context(telegram_user_id, chat_id)
@@ -154,7 +161,7 @@ class CreateAgentService:
         payload = dict(session.wizard_payload)
         payload["branch"] = branches[branch_index]
         del payload["branches"]
-        await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_PROMPT, payload)
+        await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_PLAYBOOK, payload)
 
     async def save_branch(self, telegram_user_id: int, branch_name: str) -> None:
         branch_name = branch_name.strip()
@@ -168,7 +175,24 @@ class CreateAgentService:
         payload = dict(session.wizard_payload)
         payload["branch"] = branch_name
         payload.pop("branches", None)
+        await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_PLAYBOOK, payload)
+
+    async def choose_playbook(self, telegram_user_id: int, playbook_id: str) -> str:
+        session = await self.state_repo.get_session(telegram_user_id)
+        if session.wizard_state not in {WizardStep.WAITING_PLAYBOOK, WizardStep.WAITING_PROMPT}:
+            raise CreateAgentError(
+                "Playbook selection is only available during /newagent after the branch step."
+            )
+
+        try:
+            playbook = self.playbook_service.get(playbook_id)
+        except KeyError as exc:
+            raise CreateAgentError(str(exc)) from exc
+
+        payload = dict(session.wizard_payload)
+        payload["playbook"] = playbook.id
         await self.state_repo.set_wizard(telegram_user_id, WizardStep.WAITING_PROMPT, payload)
+        return playbook.id
 
     async def finish_prompt(
         self,
@@ -185,12 +209,16 @@ class CreateAgentService:
             raise CreateAgentError("No prompt input is expected right now.")
 
         payload = session.wizard_payload
+        composed_prompt = self.playbook_service.compose_prompt(
+            payload.get("playbook"),
+            prompt_text,
+        )
         previous_active_agent_id = session.active_agent_id
         agent = await self.cursor_client.create_agent(
             model=payload["model"],
             repository_url=payload["repository"],
             base_branch=payload["branch"],
-            prompt_text=prompt_text,
+            prompt_text=composed_prompt,
             images=images,
         )
         await self.state_repo.set_delivery_cursor(agent.id, 0)

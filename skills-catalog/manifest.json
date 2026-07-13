@@ -1,0 +1,1132 @@
+{
+  "version": 1,
+  "policy": {
+    "purpose": "sync-pack-for-hackathon-target-repos",
+    "sync_mode": "playbook-mapped-only",
+    "commit_skills_in_target_repo": true
+  },
+  "totals": {
+    "inventory": 137,
+    "playbooked": 68,
+    "archived": 69
+  },
+  "playbooks": {
+    "ui": {
+      "title": "Premium UI build",
+      "summary": "Polished React/Next UI with design-promax + craft rules",
+      "skills": [
+        "design-promax",
+        "frontend-design",
+        "frontend-design-guidelines",
+        "design-taste",
+        "design-taste-frontend",
+        "gpt-taste",
+        "high-end-visual-design",
+        "page-load-animations",
+        "web-animation-guidelines",
+        "number-formatting",
+        "transitions-dev",
+        "landing-page-rewrite",
+        "brand-design",
+        "redesign-existing-projects",
+        "minimalist-ui",
+        "stitch-design-taste"
+      ]
+    },
+    "seo": {
+      "title": "GEO + SEO pass",
+      "summary": "AI-search citability + technical SEO foundations",
+      "skills": [
+        "geo",
+        "geo-audit",
+        "geo-citability",
+        "geo-technical",
+        "geo-schema",
+        "geo-llmstxt",
+        "geo-content",
+        "geo-crawlers",
+        "geo-brand-mentions",
+        "geo-platform-optimizer",
+        "geo-report",
+        "landing-page-rewrite"
+      ]
+    },
+    "ship": {
+      "title": "Ship-ready slice",
+      "summary": "Tracer-bullet vertical slice \u2014 build, test, PR, demo",
+      "skills": [
+        "diagnose",
+        "tdd",
+        "review-and-iterate",
+        "vibe-security",
+        "webapp-testing",
+        "handoff",
+        "prototype",
+        "zoom-out"
+      ]
+    },
+    "hackathon": {
+      "title": "Hackathon sprint",
+      "summary": "MVP \u2192 polish \u2192 submission \u2192 social in one pass",
+      "skills": [
+        "submit-to-hackathon",
+        "hackathon-project-social-playbook",
+        "bpfg-hackathon",
+        "create-pitch-deck",
+        "competitive-landscape",
+        "roast-my-product",
+        "product-review",
+        "validate-idea",
+        "scaffold-project",
+        "build-with-claude",
+        "colosseum-copilot",
+        "apply-grant"
+      ]
+    },
+    "fullstack": {
+      "title": "Fullstack feature",
+      "summary": "API + UI + persistence for one feature",
+      "skills": [
+        "design-promax",
+        "frontend-design-guidelines",
+        "design-taste",
+        "page-load-animations",
+        "number-formatting",
+        "diagnose",
+        "tdd",
+        "vibe-security",
+        "webapp-testing",
+        "prototype"
+      ]
+    },
+    "solana": {
+      "title": "Solana build",
+      "summary": "Scaffold, program, debug, review, deploy for Solana hackathons",
+      "skills": [
+        "scaffold-project",
+        "build-defi-protocol",
+        "build-data-pipeline",
+        "debug-program",
+        "review-and-iterate",
+        "deploy-to-mainnet",
+        "solana-beginner",
+        "launch-token",
+        "x-ray",
+        "defillama-research",
+        "find-next-crypto-idea",
+        "virtual-solana-incubator",
+        "spyzer-memecoin-guide",
+        "build-mobile"
+      ]
+    },
+    "pitch": {
+      "title": "Pitch + content",
+      "summary": "Deck, video, ads, brand kit for demo day",
+      "skills": [
+        "create-pitch-deck",
+        "pptx",
+        "marketing-video",
+        "video-craft",
+        "hackathon-project-social-playbook",
+        "ad-variation-generator",
+        "brandkit",
+        "theme-factory"
+      ]
+    },
+    "security": {
+      "title": "Security pass",
+      "summary": "Threat model, audit, and review before demo",
+      "skills": [
+        "vibe-security",
+        "cso",
+        "x-ray",
+        "solidity-auditor",
+        "solodit",
+        "review-and-iterate"
+      ]
+    },
+    "none": {
+      "title": "No playbook",
+      "summary": "Raw prompt only \u2014 sync no skills",
+      "skills": []
+    }
+  },
+  "skills": {
+    "ad-variation-generator": {
+      "source": "/Users/kaizen/.agents/skills/ad-variation-generator",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "algorithmic-art": {
+      "source": "/Users/kaizen/.agents/skills/algorithmic-art",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "apply-grant": {
+      "source": "/Users/kaizen/.agents/skills/apply-grant",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "bpfg-hackathon": {
+      "source": "/Users/kaizen/.agents/skills/bpfg-hackathon",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "brand-design": {
+      "source": "/Users/kaizen/.agents/skills/brand-design",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "brand-guidelines": {
+      "source": "/Users/kaizen/.agents/skills/brand-guidelines",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "brandkit": {
+      "source": "/Users/kaizen/.agents/skills/brandkit",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "build-data-pipeline": {
+      "source": "/Users/kaizen/.agents/skills/build-data-pipeline",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "build-defi-protocol": {
+      "source": "/Users/kaizen/.agents/skills/build-defi-protocol",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "build-mobile": {
+      "source": "/Users/kaizen/.agents/skills/build-mobile",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "build-with-claude": {
+      "source": "/Users/kaizen/.agents/skills/build-with-claude",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "canvas-design": {
+      "source": "/Users/kaizen/.agents/skills/canvas-design",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "caveman": {
+      "source": "/Users/kaizen/.agents/skills/caveman",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "claude-agent-sdk-expert": {
+      "source": "/Users/kaizen/.agents/skills/claude-agent-sdk-expert",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "claude-api": {
+      "source": "/Users/kaizen/.agents/skills/claude-api",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "clipify": {
+      "source": "/Users/kaizen/.agents/skills/clipify",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "colosseum-copilot": {
+      "source": "/Users/kaizen/.agents/skills/colosseum-copilot",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "competitive-landscape": {
+      "source": "/Users/kaizen/.agents/skills/competitive-landscape",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "create-pitch-deck": {
+      "source": "/Users/kaizen/.agents/skills/create-pitch-deck",
+      "playbooks": [
+        "hackathon",
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "cso": {
+      "source": "/Users/kaizen/.agents/skills/cso",
+      "playbooks": [
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "cua-skill": {
+      "source": "/Users/kaizen/.agents/skills/cua-skill",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "data": {
+      "source": "/Users/kaizen/.agents/skills/data",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "debug-program": {
+      "source": "/Users/kaizen/.agents/skills/debug-program",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "deep-mantle-researcher": {
+      "source": "/Users/kaizen/.agents/skills/deep-mantle-researcher",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "defillama-research": {
+      "source": "/Users/kaizen/.agents/skills/defillama-research",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "deploy-to-mainnet": {
+      "source": "/Users/kaizen/.agents/skills/deploy-to-mainnet",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "design-promax": {
+      "source": "/Users/kaizen/.agents/skills/design-promax",
+      "playbooks": [
+        "ui",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "design-taste": {
+      "source": "/Users/kaizen/.agents/skills/design-taste",
+      "playbooks": [
+        "ui",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "design-taste-frontend": {
+      "source": "/Users/kaizen/.agents/skills/design-taste-frontend",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "diagnose": {
+      "source": "/Users/kaizen/.agents/skills/diagnose",
+      "playbooks": [
+        "ship",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "doc-coauthoring": {
+      "source": "/Users/kaizen/.agents/skills/doc-coauthoring",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "docx": {
+      "source": "/Users/kaizen/.agents/skills/docx",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "find-next-crypto-idea": {
+      "source": "/Users/kaizen/.agents/skills/find-next-crypto-idea",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "find-skills": {
+      "source": "/Users/kaizen/.agents/skills/find-skills",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "frontend-design": {
+      "source": "/Users/kaizen/.agents/skills/frontend-design",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "frontend-design-guidelines": {
+      "source": "/Users/kaizen/.agents/skills/frontend-design-guidelines",
+      "playbooks": [
+        "ui",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "full-output-enforcement": {
+      "source": "/Users/kaizen/.agents/skills/full-output-enforcement",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "geo": {
+      "source": "/Users/kaizen/.agents/skills/geo",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-audit": {
+      "source": "/Users/kaizen/.agents/skills/geo-audit",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-brand-mentions": {
+      "source": "/Users/kaizen/.agents/skills/geo-brand-mentions",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-citability": {
+      "source": "/Users/kaizen/.agents/skills/geo-citability",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-compare": {
+      "source": "/Users/kaizen/.agents/skills/geo-compare",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "geo-content": {
+      "source": "/Users/kaizen/.agents/skills/geo-content",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-crawlers": {
+      "source": "/Users/kaizen/.agents/skills/geo-crawlers",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-llmstxt": {
+      "source": "/Users/kaizen/.agents/skills/geo-llmstxt",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-platform-optimizer": {
+      "source": "/Users/kaizen/.agents/skills/geo-platform-optimizer",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-proposal": {
+      "source": "/Users/kaizen/.agents/skills/geo-proposal",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "geo-prospect": {
+      "source": "/Users/kaizen/.agents/skills/geo-prospect",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "geo-report": {
+      "source": "/Users/kaizen/.agents/skills/geo-report",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-report-pdf": {
+      "source": "/Users/kaizen/.agents/skills/geo-report-pdf",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "geo-schema": {
+      "source": "/Users/kaizen/.agents/skills/geo-schema",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-technical": {
+      "source": "/Users/kaizen/.agents/skills/geo-technical",
+      "playbooks": [
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "geo-update": {
+      "source": "/Users/kaizen/.agents/skills/geo-update",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "git-guardrails-claude-code": {
+      "source": "/Users/kaizen/.agents/skills/git-guardrails-claude-code",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "gpt-taste": {
+      "source": "/Users/kaizen/.agents/skills/gpt-taste",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "grill-me": {
+      "source": "/Users/kaizen/.agents/skills/grill-me",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "grill-with-docs": {
+      "source": "/Users/kaizen/.agents/skills/grill-with-docs",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "hackathon-project-social-playbook": {
+      "source": "/Users/kaizen/.agents/skills/hackathon-project-social-playbook",
+      "playbooks": [
+        "hackathon",
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "handoff": {
+      "source": "/Users/kaizen/.agents/skills/handoff",
+      "playbooks": [
+        "ship"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "high-end-visual-design": {
+      "source": "/Users/kaizen/.agents/skills/high-end-visual-design",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "improve-codebase-architecture": {
+      "source": "/Users/kaizen/.agents/skills/improve-codebase-architecture",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "industrial-brutalist-ui": {
+      "source": "/Users/kaizen/.agents/skills/industrial-brutalist-ui",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "internal-comms": {
+      "source": "/Users/kaizen/.agents/skills/internal-comms",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "investigative-video-strategy": {
+      "source": "/Users/kaizen/.agents/skills/investigative-video-strategy",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "landing-page-rewrite": {
+      "source": "/Users/kaizen/.agents/skills/landing-page-rewrite",
+      "playbooks": [
+        "ui",
+        "seo"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "launch-token": {
+      "source": "/Users/kaizen/.agents/skills/launch-token",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "learn": {
+      "source": "/Users/kaizen/.agents/skills/learn",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "marketing-video": {
+      "source": "/Users/kaizen/.agents/skills/marketing-video",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "mcp-builder": {
+      "source": "/Users/kaizen/.agents/skills/mcp-builder",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "migrate-to-shoehorn": {
+      "source": "/Users/kaizen/.agents/skills/migrate-to-shoehorn",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "minimalist-ui": {
+      "source": "/Users/kaizen/.agents/skills/minimalist-ui",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "mirrormarket": {
+      "source": "/Users/kaizen/.agents/skills/mirrormarket",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "moolre-docs": {
+      "source": "/Users/kaizen/.agents/skills/moolre-docs",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "navigate-skills": {
+      "source": "/Users/kaizen/.agents/skills/navigate-skills",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "number-formatting": {
+      "source": "/Users/kaizen/.agents/skills/number-formatting",
+      "playbooks": [
+        "ui",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "page-load-animations": {
+      "source": "/Users/kaizen/.agents/skills/page-load-animations",
+      "playbooks": [
+        "ui",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "pdf": {
+      "source": "/Users/kaizen/.agents/skills/pdf",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "pptx": {
+      "source": "/Users/kaizen/.agents/skills/pptx",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "product-review": {
+      "source": "/Users/kaizen/.agents/skills/product-review",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "prototype": {
+      "source": "/Users/kaizen/.agents/skills/prototype",
+      "playbooks": [
+        "ship",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "redesign-existing-projects": {
+      "source": "/Users/kaizen/.agents/skills/redesign-existing-projects",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "review-and-iterate": {
+      "source": "/Users/kaizen/.agents/skills/review-and-iterate",
+      "playbooks": [
+        "ship",
+        "solana",
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "roast-my-product": {
+      "source": "/Users/kaizen/.agents/skills/roast-my-product",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "scaffold-exercises": {
+      "source": "/Users/kaizen/.agents/skills/scaffold-exercises",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "scaffold-project": {
+      "source": "/Users/kaizen/.agents/skills/scaffold-project",
+      "playbooks": [
+        "hackathon",
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "setup-matt-pocock-skills": {
+      "source": "/Users/kaizen/.agents/skills/setup-matt-pocock-skills",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "setup-pre-commit": {
+      "source": "/Users/kaizen/.agents/skills/setup-pre-commit",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "skill-creator": {
+      "source": "/Users/kaizen/.agents/skills/skill-creator",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "slack-gif-creator": {
+      "source": "/Users/kaizen/.agents/skills/slack-gif-creator",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "solana-beginner": {
+      "source": "/Users/kaizen/.agents/skills/solana-beginner",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "solidity-auditor": {
+      "source": "/Users/kaizen/.agents/skills/solidity-auditor",
+      "playbooks": [
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "solodit": {
+      "source": "/Users/kaizen/.agents/skills/solodit",
+      "playbooks": [
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "source-command-sc-analyze": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-analyze",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-brainstorm": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-brainstorm",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-build": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-build",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-cleanup": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-cleanup",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-design": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-design",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-document": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-document",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-estimate": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-estimate",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-explain": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-explain",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-git": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-git",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-help": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-help",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-implement": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-implement",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-improve": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-improve",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-index": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-index",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-load": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-load",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-pm": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-pm",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-reflect": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-reflect",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-research": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-research",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-save": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-save",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-select-tool": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-select-tool",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-spawn": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-spawn",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-task": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-task",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-test": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-test",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-troubleshoot": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-troubleshoot",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "source-command-sc-workflow": {
+      "source": "/Users/kaizen/.agents/skills/source-command-sc-workflow",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "spyzer-memecoin-guide": {
+      "source": "/Users/kaizen/.agents/skills/spyzer-memecoin-guide",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "stitch-design-taste": {
+      "source": "/Users/kaizen/.agents/skills/stitch-design-taste",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "submit-to-hackathon": {
+      "source": "/Users/kaizen/.agents/skills/submit-to-hackathon",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "tdd": {
+      "source": "/Users/kaizen/.agents/skills/tdd",
+      "playbooks": [
+        "ship",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "template": {
+      "source": "/Users/kaizen/.agents/skills/template",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "theme-factory": {
+      "source": "/Users/kaizen/.agents/skills/theme-factory",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "to-issues": {
+      "source": "/Users/kaizen/.agents/skills/to-issues",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "to-prd": {
+      "source": "/Users/kaizen/.agents/skills/to-prd",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "transitions-dev": {
+      "source": "/Users/kaizen/.agents/skills/transitions-dev",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "triage": {
+      "source": "/Users/kaizen/.agents/skills/triage",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "validate-idea": {
+      "source": "/Users/kaizen/.agents/skills/validate-idea",
+      "playbooks": [
+        "hackathon"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "vibe-security": {
+      "source": "/Users/kaizen/.agents/skills/vibe-security",
+      "playbooks": [
+        "ship",
+        "fullstack",
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "video-craft": {
+      "source": "/Users/kaizen/.agents/skills/video-craft",
+      "playbooks": [
+        "pitch"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "virtual-solana-incubator": {
+      "source": "/Users/kaizen/.agents/skills/virtual-solana-incubator",
+      "playbooks": [
+        "solana"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "web-animation-guidelines": {
+      "source": "/Users/kaizen/.agents/skills/web-animation-guidelines",
+      "playbooks": [
+        "ui"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "web-artifacts-builder": {
+      "source": "/Users/kaizen/.agents/skills/web-artifacts-builder",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "webapp-testing": {
+      "source": "/Users/kaizen/.agents/skills/webapp-testing",
+      "playbooks": [
+        "ship",
+        "fullstack"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "write-a-skill": {
+      "source": "/Users/kaizen/.agents/skills/write-a-skill",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "x-ray": {
+      "source": "/Users/kaizen/.agents/skills/x-ray",
+      "playbooks": [
+        "solana",
+        "security"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    },
+    "xlsx": {
+      "source": "/Users/kaizen/.agents/skills/xlsx",
+      "playbooks": [],
+      "status": "archived",
+      "vendored": false
+    },
+    "zoom-out": {
+      "source": "/Users/kaizen/.agents/skills/zoom-out",
+      "playbooks": [
+        "ship"
+      ],
+      "status": "playbooked",
+      "vendored": true
+    }
+  }
+}

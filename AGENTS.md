@@ -4,21 +4,41 @@
 
 ### Overview
 
-This is a Python 3.12 async service (`cursor-tg-connector`) that bridges a Telegram bot with the Cursor Cloud Agents API. It is a single-process application with no external database servers — only an embedded SQLite file via `aiosqlite`.
+Python 3.12 async Telegram ↔ Cursor Cloud Agents bridge (`cursor-tg-connector`). Single process, SQLite via `aiosqlite`.
 
 ### Development commands
 
-See `README.md` for canonical setup. Quick reference:
-
 - **Install**: `source .venv/bin/activate && pip install -e ".[dev]"`
 - **Lint**: `ruff check .`
-- **Test**: `pytest` (runs fully offline — all HTTP calls are mocked via `respx`)
-- **Run**: `python -m cursor_tg_connector` (requires `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALLOWED_USER_ID`, and `CURSOR_API_KEY` env vars or `.env` file)
+- **Test**: `pytest`
+- **Run**: `python -m cursor_tg_connector`
+
+### Hackathon skills pack (decided)
+
+| Decision | Choice |
+|----------|--------|
+| Purpose | Sync pack for **hackathon target repos** |
+| Sync mode | **Playbook-mapped only** |
+| Inventory | **137** skills catalogued in `skills-catalog/` (nothing forgotten) |
+| Vendored | **68** skills in `skills-pack/skills/` (~6MB; geo slimmed) |
+| Target repos | **Commit** synced `.cursor/skills/` so Cloud Agents see them |
+
+```bash
+./scripts/sync-skills-to-repo.sh --list
+./scripts/sync-skills-to-repo.sh /path/to/hackathon-repo --playbook ui
+./scripts/sync-skills-to-repo.sh /path/to/hackathon-repo --playbook solana,ship
+./scripts/refresh-skills-pack.sh   # re-vendor from ~/.agents + ~/.claude
+```
+
+Telegram: `/newagent` → model → repo → branch → **playbook** → prompt  
+Also: `/playbooks`, `/useplaybook <id>`
+
+Playbook ids: `ui`, `seo`, `ship`, `hackathon`, `fullstack`, `solana`, `pitch`, `security`, `none`
 
 ### Non-obvious caveats
 
-- The app validates the Cursor API key on startup by calling `GET /v0/me`. It will exit immediately if the key is invalid. For local testing without real credentials, rely on `pytest` which mocks all external calls.
-- `pydantic-settings` reads from a `.env` file by default. Do not commit a `.env` file — use `.env.example` as a template.
-- `pytest` is configured with `asyncio_mode = "auto"` in `pyproject.toml`, so all async test functions run automatically without explicit `@pytest.mark.asyncio`.
-- The venv must be activated before running any commands: `source .venv/bin/activate`.
-- System dependency `python3.12-venv` is required on Ubuntu if not already present (`sudo apt-get install -y python3.12-venv`).
+- Cursor API key is validated on startup (`GET /v0/me`).
+- Do not commit `.env`.
+- `pytest` uses `asyncio_mode = auto`; HTTP is mocked via `respx`.
+- Cloud Agents only load skills from the **target** repo — sync + commit before launch.
+- Full `geo` tree is ~176MB; pack vendors `SKILL.md` only for geo entrypoints.

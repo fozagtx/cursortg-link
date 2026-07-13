@@ -13,6 +13,7 @@ from cursor_tg_connector.persistence_db import Database
 from cursor_tg_connector.services_agent_service import AgentService
 from cursor_tg_connector.services_create_agent_service import CreateAgentService, RepositoryPage
 from cursor_tg_connector.services_followup_service import FollowupService
+from cursor_tg_connector.services_playbook_service import Playbook
 from cursor_tg_connector.services_polling_service import PollingService
 from cursor_tg_connector.services_pull_request_service import PullRequestService
 from cursor_tg_connector.telegram_bot_constants import (
@@ -20,6 +21,7 @@ from cursor_tg_connector.telegram_bot_constants import (
     BRANCH_SELECT_PREFIX,
     MODEL_PAGE_PREFIX,
     MODEL_SELECT_PREFIX,
+    PLAYBOOK_SELECT_PREFIX,
     PR_MERGE_PREFIX,
     PR_READY_PREFIX,
     PR_SHOW_PREFIX,
@@ -44,6 +46,8 @@ BOT_COMMANDS: list[tuple[str, str]] = [
     ("close", "Close the current bound Telegram agent thread"),
     ("threadmode", "Toggle per-agent Telegram thread routing"),
     ("newagent", "Create a new Cursor cloud agent"),
+    ("playbooks", "List Cloud Agent playbooks (ui/seo/ship/solana/...)"),
+    ("useplaybook", "Select a playbook during /newagent prompt step"),
     ("pr", "Show the current agent pull request and actions"),
     ("diff", "Show the current agent pull request diff"),
     ("ready", "Mark the current agent pull request ready for review"),
@@ -160,6 +164,19 @@ def render_branch_keyboard(
         for index, branch in enumerate(page_data.repositories)
     ]
     rows.extend(_pagination_rows(page_data.page, page_data.total_pages, BRANCH_PAGE_PREFIX))
+    return InlineKeyboardMarkup(rows)
+
+
+def render_playbook_keyboard(playbooks: list[Playbook]) -> InlineKeyboardMarkup:
+    rows: list[list[InlineKeyboardButton]] = []
+    for playbook in playbooks:
+        label = playbook.id if playbook.id == "none" else f"{playbook.id} — {playbook.title}"
+        # Telegram button text max is 64 chars
+        if len(label) > 64:
+            label = label[:61] + "..."
+        rows.append(
+            [InlineKeyboardButton(label, callback_data=f"{PLAYBOOK_SELECT_PREFIX}{playbook.id}")]
+        )
     return InlineKeyboardMarkup(rows)
 
 

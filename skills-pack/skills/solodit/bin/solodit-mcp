@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+KEY="$(security find-generic-password -w -s CYFRIN_API_KEY 2>/dev/null || true)"
+
+if [ -z "$KEY" ]; then
+  echo "CYFRIN_API_KEY is not set in macOS Keychain." >&2
+  exit 1
+fi
+
+export CYFRIN_API_KEY="$KEY"
+exec node /Users/kaizen/.agents/skills/solodit/dist/index.js
